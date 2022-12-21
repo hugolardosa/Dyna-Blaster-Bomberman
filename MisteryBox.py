@@ -1,0 +1,3 @@
+
+class MisteryBox:
+    pass
