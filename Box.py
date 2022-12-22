@@ -3,7 +3,7 @@ class Box:
         self.pos = [x,y]
         self.opened = False
     
-    def set_opened(self):
+    def setOpened(self):
         self.opened = True
     
     def __eq__(self, __o: object) -> bool:

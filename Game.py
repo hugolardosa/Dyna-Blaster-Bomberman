@@ -18,9 +18,11 @@ class Game:
         self._width = 15
         self._stage = Stage("Maps/map_1.bmp")
         self._playerCurrentPos = self._stage.player
+        self._bombs = []
         self._dropbomb = pygame.event.custom_type()
         self._boxdrop = pygame.event.custom_type()
         self._playerdead = pygame.event.custom_type()
+        self._enemydead = pygame.event.custom_type()
         
         """ Virtually private constructor. """
         if Game.__instance != None:
@@ -63,3 +65,17 @@ class Game:
     @property
     def playerdead(self):
         return self._playerdead
+    
+    @property
+    def bombs(self):
+        return self._bombs
+    
+    def tick(self):
+        for enemy in self._stage.enemies:
+            enemy.tick()
+            
+        for bomb in self._bombs:
+            bomb.tick()
+            if bomb.exploded:
+                self._bombs.remove(bomb)
+    

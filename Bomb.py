@@ -10,12 +10,13 @@ class Bomb:
         self.time = time
         self.radius = 5
         self.damage = 1
+        self.timePassed = 0
         self.exploded = False
     
     def draw(self,display):
         scale = Game.getInstance().scale
         display.fill("orange", (self.pos[0] * scale, self.pos[1] * scale, scale, scale))
-    
+
     def inRange(self, gameElement):
         bombX, bombY = self.pos
         
@@ -47,7 +48,12 @@ class Bomb:
                 
         return False
         
-        
+    def tick(self):
+        if self.timePassed < self.time:
+            self.timePassed += 1  
+        else:
+            self.explode()
+            
     def explode(self):
         player = Game.getInstance().playerCurrentPos
         
@@ -59,9 +65,11 @@ class Bomb:
         
         for box in Game.getInstance().stage.boxes:
             if self.inRange(box):
-                env = pygame.event.Event(Game.getInstance().boxdrop, {"box": box})
-                pygame.event.post(env)
+                box.setOpened()
+                Game.getInstance().stage.boxes.remove(box)
         
         # enemies
-        
-        # bomb
+        for enemy in Game.getInstance().stage.enemies:
+            if self.inRange(enemy):
+                enemy.kill()
+                Game.getInstance().stage.enemies.remove(enemy)

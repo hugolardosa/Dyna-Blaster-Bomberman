@@ -1,6 +1,6 @@
 import pygame
 from Box import Box
-
+from Enemy import Enemy
 
 WALL = 16777215
 PLAYER = 255
@@ -18,6 +18,7 @@ class Stage:
 
         self._walls = []
         self._boxes = []
+        self._enimies = [Enemy("Marco", [7,11], [11, 7], 1, 1 )]
         
         for x in range(self.hor_tiles):
             for y in range(self.ver_tiles):
@@ -40,3 +41,7 @@ class Stage:
     @property
     def boxes(self):
         return self._boxes
+
+    @property
+    def enemies(self):
+        return self._enimies

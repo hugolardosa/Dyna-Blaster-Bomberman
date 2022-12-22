@@ -10,40 +10,43 @@ from Enemy import Enemy
 from Command import InputHandler
 from Game import Game
 
-from Sprites import WallSprite, BoxSprite, EnemySprite
+from Sprites import WallSprite, BoxSprite, EnemySprite, BombSprite, PlayerSprite
 
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
 
-Game() # Initialize Game singleton
+game = Game() # Initialize Game singleton
 
-display = pygame.display.set_mode((Game.getInstance().scale * Game.getInstance().width, Game.getInstance().scale * Game.getInstance().height))
+display = pygame.display.set_mode((game.scale * game.width, game.scale * game.height))
 
 clock = pygame.time.Clock()
 
 player = Player()
-enemy = Enemy("Marco", [7,11], [11, 7], 1, 1 )
+
 
 running = True
 
 wallSprites = pygame.sprite.Group()
 
 collisionSprites = pygame.sprite.Group()
-for wall in Game.getInstance().stage.walls:
-    wallSprites.add(WallSprite(wall[0] * Game.getInstance().scale, wall[1] * Game.getInstance().scale, Game.getInstance().scale, "white"))
-for box in Game.getInstance().stage.boxes:  
-    collisionSprites.add(BoxSprite(box, Game.getInstance().scale, "brown"))
+for wall in game.stage.walls:
+    wallSprites.add(WallSprite(wall[0], wall[1], game.scale, "white"))
+for box in game.stage.boxes:  
+    collisionSprites.add(BoxSprite(box, game.scale, "brown"))
 
 enemySprites = pygame.sprite.Group()
-enemySprites.add(EnemySprite(enemy, Game.getInstance().scale, "blue"))
+enemySprites.add(EnemySprite(game.stage.enemies[0], game.scale, "blue"))
  
-# music.load("Music/05_BGM1.mp3")
-# music.play(-1)
+bombSprites = pygame.sprite.Group()
 
-bomb_flag = False
-bomb_count = 0
-dbomb = None
+playerSprites = pygame.sprite.Group()
+playerSprites.add(PlayerSprite(player, game.scale, "red"))
+ 
+music.load("Music/05_BGM1.mp3")
+music.play(-1)
+
+
 
 inputDict = {
                 pygame.K_SPACE: 'action'
@@ -56,27 +59,17 @@ while running:
         elif event.type == pygame.KEYDOWN:
             InputHandler().handleInput(event, player, 
                                         {pygame.K_SPACE: 'action'})
-        elif event.type == Game.getInstance().dropbomb:
-            if bomb_flag:
-                continue
-            x,y = event.pos
-            bomb_flag = True
-            bomb = Bomb([x,y], 40)
+        elif event.type == game.dropbomb:
+            x,y = player.pos
+            game.bombs.append(Bomb([x,y], 40))
+            bombSprites.add(BombSprite(game.bombs[-1], game.scale, "yellow"))
             
-        elif event.type == Game.getInstance().boxdrop:
-            Game.getInstance().stage.boxes.remove(event.box)
-            for sp in collisionSprites:
-                if sp.box == event.box:
-                    collisionSprites.remove(sp)
-                    break
-            print(f"Box dropped - {event.box.pos}")
+        elif event.type == game.playerdead:
+            player.takeDamage()
             
-        elif event.type == Game.getInstance().playerdead:
-            print("Player died")
-        
-    print(player.pos)       
-    display.fill("black")
-    player.draw(display)
+      
+    display.fill("olive")
+    
     
     wallSprites.draw(display)
     
@@ -85,7 +78,12 @@ while running:
     
     enemySprites.draw(display)
     enemySprites.update()
-    enemy.move()
+    
+    bombSprites.draw(display)
+    bombSprites.update()
+    
+    playerSprites.draw(display)
+    playerSprites.update()
     
     state = pygame.key.get_pressed()
     if state[pygame.K_w]:
@@ -97,14 +95,8 @@ while running:
     elif state[pygame.K_d]:
         player.right()
         
-    if bomb_flag:
-        bomb_count += 1
-        bomb.draw(display)
-        if bomb_count == bomb.time:
-            bomb.explode()
-            bomb = None
-            bomb_flag  = False
-            bomb_count = 0
+    game.tick()
+
 
     pygame.display.update()
     clock.tick(30)
