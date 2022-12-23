@@ -1,35 +1,29 @@
 from Stage import Stage
+from Player import Player
+from Enemy import Enemy
+from Box import Box
+from Bomb import Bomb
+
 import pygame 
 
 class Game:
-    
-    __instance = None
-    
-    @staticmethod 
-    def getInstance():
-        """ Static access method. """
-        if Game.__instance == None:
-            Game()
-        return Game.__instance
     
     def __init__(self):
         self._scale = 40
         self._height = 15
         self._width = 15
         self._stage = Stage("Maps/map_1.bmp")
-        self._playerCurrentPos = self._stage.player
-        self._bombs = []
+        
         self._dropbomb = pygame.event.custom_type()
         self._boxdrop = pygame.event.custom_type()
         self._playerdead = pygame.event.custom_type()
         self._enemydead = pygame.event.custom_type()
         
-        """ Virtually private constructor. """
-        if Game.__instance != None:
-            raise Exception("This class is a singleton!")
-        else:
-            Game.__instance = self
-            
+        self._player = Player(self._stage,self._dropbomb)
+        self._boxes = [Box(b[0],b[1]) for b in self._stage.boxes]
+        self._enemies = [Enemy("Marco", (7,11), (11, 7),self._stage, self._player.pos)]
+        self._bombs = []
+        
     
     @property
     def scale(self):
@@ -53,10 +47,7 @@ class Game:
 
     @property
     def playerCurrentPos(self):
-        return self._playerCurrentPos
-    
-    def setPlayerCurrentPos(self, pos):
-        self._playerCurrentPos = pos
+        return self._player.pos
         
     @property
     def boxdrop(self):
@@ -70,12 +61,80 @@ class Game:
     def bombs(self):
         return self._bombs
     
+    @property
+    def boxes(self):
+        return self._boxes
+    
+    def addBomb(self, pos):
+        self._bombs.append(Bomb(pos,40))
+    
+    @property
+    def enemies(self):
+        return self._enemies
+    
+    @property
+    def player(self):
+        return self._player
+    
     def tick(self):
-        for enemy in self._stage.enemies:
+        for enemy in self._enemies:
             enemy.tick()
+            if self._player.pos[0] == enemy.pos[0] and self._player.pos[1] == enemy.pos[1]:
+                pygame.event.post(pygame.event.Event(self._playerdead)) 
             
         for bomb in self._bombs:
             bomb.tick()
-            if bomb.exploded:
+            if bomb.timePassed >= bomb.time:
+                self.explosion(bomb)
                 self._bombs.remove(bomb)
-    
+                
+    def inRange(self, bomb, gameElement):
+        bombX, bombY = bomb.pos
+        
+        elemX, elemY = gameElement.pos if hasattr(gameElement, "pos") else gameElement
+        
+        walls = self.stage.walls
+        if bombX == elemX:
+            for rad in range(bomb.radius + 1):
+                if (bombX, bombY + rad) in walls:
+                    break
+                if (elemX, elemY) == (bombX, bombY + rad):
+                    return True
+            for rad in range(bomb.radius + 1):
+                if (bombX, bombY - rad) in walls:
+                    break
+                if (elemX, elemY) == (bombX, bombY - rad):
+                    return True
+        if bombY == elemY:
+            for rad in range(bomb.radius + 1):
+                if (bombX - rad, bombY) in walls:
+                    break
+                if (elemX, elemY) == (bombX + rad, bombY ):
+                    return True
+            for rad in range(bomb.radius + 1):
+                if (bombX - rad, bombY) in walls:
+                    break
+                if (elemX, elemY) == (bombX - rad, bombY):
+                    return True
+                
+        return False
+
+    def explosion(self,bomb):
+        
+        bomb.exploded = True
+        
+        if self.inRange(bomb,self._player):
+            env = pygame.event.Event(self.playerdead)
+            pygame.event.post(env)
+        
+        for box in self.boxes:
+            if self.inRange(bomb, box):
+                box.setOpened()
+                self._boxes.remove(box)
+                self.stage.boxes.remove(box.pos)
+        
+        # enemies
+        for enemy in self._enemies:
+            if self.inRange(bomb, enemy):
+                enemy.kill()
+                self.enemies.remove(enemy)

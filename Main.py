@@ -22,9 +22,6 @@ display = pygame.display.set_mode((game.scale * game.width, game.scale * game.he
 
 clock = pygame.time.Clock()
 
-player = Player()
-
-
 running = True
 
 wallSprites = pygame.sprite.Group()
@@ -32,19 +29,19 @@ wallSprites = pygame.sprite.Group()
 collisionSprites = pygame.sprite.Group()
 for wall in game.stage.walls:
     wallSprites.add(WallSprite(wall[0], wall[1], game.scale, "white"))
-for box in game.stage.boxes:  
+for box in game.boxes: 
     collisionSprites.add(BoxSprite(box, game.scale, "brown"))
 
 enemySprites = pygame.sprite.Group()
-enemySprites.add(EnemySprite(game.stage.enemies[0], game.scale, "blue"))
+enemySprites.add(EnemySprite(game.enemies[0], game.scale, "blue"))
  
 bombSprites = pygame.sprite.Group()
 
 playerSprites = pygame.sprite.Group()
-playerSprites.add(PlayerSprite(player, game.scale, "red"))
+playerSprites.add(PlayerSprite(game.player, game.scale, "red"))
  
-music.load("Music/05_BGM1.mp3")
-music.play(-1)
+# music.load("Music/05_BGM1.mp3")
+# music.play(-1)
 
 
 
@@ -57,15 +54,16 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            InputHandler().handleInput(event, player, 
+            InputHandler().handleInput(event, game.player, 
                                         {pygame.K_SPACE: 'action'})
         elif event.type == game.dropbomb:
-            x,y = player.pos
-            game.bombs.append(Bomb([x,y], 40))
+            x,y = game.player.pos
+            game.addBomb([x,y])
             bombSprites.add(BombSprite(game.bombs[-1], game.scale, "yellow"))
             
         elif event.type == game.playerdead:
-            player.takeDamage()
+            game.player.takeDamage()
+            print("Player Dead")
             
       
     display.fill("olive")
@@ -87,13 +85,13 @@ while running:
     
     state = pygame.key.get_pressed()
     if state[pygame.K_w]:
-        player.up()
+        game.player.up()
     elif state[pygame.K_s]:
-        player.down()
+        game.player.down()
     elif state[pygame.K_a]:
-        player.left()
+        game.player.left()
     elif state[pygame.K_d]:
-        player.right()
+        game.player.right()
         
     game.tick()
 

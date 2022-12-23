@@ -11,7 +11,7 @@ class WallSprite(pygame.sprite.Sprite):
         self.y = y
         self.size = size
         wall_image_rect = (415, 109, 16, 16)
-        self.wall_image = SPRITESHEET.image_at(wall_image_rect, -1)
+        self.wall_image = SPRITESHEET.image_at(wall_image_rect, None)
         self.wall_image = pygame.transform.scale(self.wall_image, (size, size))
         
         self.image = pygame.Surface([size * size, size * size])
@@ -36,7 +36,7 @@ class BoxSprite(pygame.sprite.Sprite):
         self.size = size
         
         box_image_rect = (399, 108, 16, 16)
-        self.box_image = SPRITESHEET.image_at(box_image_rect, -1)
+        self.box_image = SPRITESHEET.image_at(box_image_rect, None)
         self.box_image = pygame.transform.scale(self.box_image, (size, size))
 
         self.image = pygame.Surface([size * size, size * size])
@@ -67,7 +67,7 @@ class EnemySprite(pygame.sprite.Sprite):
         self.size = size
         
         enemy_image_rect = (427, 215, 16, 16)
-        self.enemy_image = SPRITESHEET.image_at(enemy_image_rect, -1)
+        self.enemy_image = SPRITESHEET.image_at(enemy_image_rect, None)
         self.enemy_image = pygame.transform.scale(self.enemy_image, (size, size))
 
         self.image = pygame.Surface([size * size, size * size])
@@ -94,7 +94,7 @@ class BombSprite(pygame.sprite.Sprite):
         self.size = size
         
         bomb_image_rect = (470, 0, 16, 16)
-        self.bomb_image = SPRITESHEET.image_at(bomb_image_rect, -1)
+        self.bomb_image = SPRITESHEET.image_at(bomb_image_rect, None)
         self.bomb_image = pygame.transform.scale(self.bomb_image, (size, size))
 
         self.image = pygame.Surface([size * size, size * size])
@@ -126,7 +126,7 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.size = size
         
         player_image_rect = (0, 0, 19, 19)
-        self.player_image = SPRITESHEET.image_at(player_image_rect, -1)
+        self.player_image = SPRITESHEET.image_at(player_image_rect, None)
         self.player_image = pygame.transform.scale(self.player_image, (size, size))
 
         self.image = pygame.Surface([size * size, size * size])

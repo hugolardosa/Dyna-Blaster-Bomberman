@@ -1,6 +1,4 @@
 import pygame
-from Box import Box
-from Enemy import Enemy
 
 WALL = 16777215
 PLAYER = 255
@@ -18,7 +16,7 @@ class Stage:
 
         self._walls = []
         self._boxes = []
-        self._enimies = [Enemy("Marco", [7,11], [11, 7], 1, 1 )]
+        self._player = []
         
         for x in range(self.hor_tiles):
             for y in range(self.ver_tiles):
@@ -26,7 +24,7 @@ class Stage:
                 if p == WALL:
                     self._walls.append((x,y))
                 elif p == BOX:
-                    self._boxes.append(Box(x,y))
+                    self._boxes.append([x,y])
                 elif p == PLAYER:
                     self._player = [x,y]
     
@@ -42,6 +40,11 @@ class Stage:
     def boxes(self):
         return self._boxes
 
-    @property
-    def enemies(self):
-        return self._enimies
+
+    def getGameMatrix(self):
+        matrix = [[1 for x in range(self.ver_tiles)] for y in range(self.hor_tiles)]
+        for w in self._walls:
+            matrix[w[1]][w[0]] = 0
+        for b in self._boxes:
+            matrix[b[1]][b[0]] = 0
+        return matrix
