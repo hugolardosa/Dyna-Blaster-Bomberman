@@ -40,8 +40,8 @@ bombSprites = pygame.sprite.Group()
 playerSprites = pygame.sprite.Group()
 playerSprites.add(PlayerSprite(game.player, game.scale, "red"))
  
-# music.load("Music/05_BGM1.mp3")
-# music.play(-1)
+music.load("Music/05_BGM1.mp3")
+music.play(-1)
 
 
 

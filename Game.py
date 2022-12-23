@@ -122,19 +122,27 @@ class Game:
     def explosion(self,bomb):
         
         bomb.exploded = True
-        
+
         if self.inRange(bomb,self._player):
             env = pygame.event.Event(self.playerdead)
             pygame.event.post(env)
         
         for box in self.boxes:
+            print(box.pos)
             if self.inRange(bomb, box):
                 box.setOpened()
-                self._boxes.remove(box)
-                self.stage.boxes.remove(box.pos)
         
         # enemies
         for enemy in self._enemies:
             if self.inRange(bomb, enemy):
                 enemy.kill()
+                
+        
+        for box in self.boxes:
+            if box.opened:
+                self._boxes.remove(box)
+                self.stage.boxes.remove(box.pos)
+            
+        for enemy in self.enemies:
+            if not enemy.isAlive:
                 self.enemies.remove(enemy)

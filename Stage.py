@@ -17,6 +17,7 @@ class Stage:
         self._walls = []
         self._boxes = []
         self._player = []
+        self._bombs = []
         
         for x in range(self.hor_tiles):
             for y in range(self.ver_tiles):
