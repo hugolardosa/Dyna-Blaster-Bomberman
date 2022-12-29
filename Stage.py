@@ -15,23 +15,23 @@ class Stage:
         self.ver_tiles=len(self.mapArray[0])
 
         self._walls = []
-        self._boxes = []
-        self._player = []
-        self._bombs = []
+        self._boxesInitialPos = []
+        self._playerInitialPos = []
+        self._enemiesInitialPos = []
         
         for x in range(self.hor_tiles):
             for y in range(self.ver_tiles):
                 p = self.mapArray[x][y] 
                 if p == WALL:
-                    self._walls.append((x,y))
+                    self._walls.append([x,y])
                 elif p == BOX:
-                    self._boxes.append([x,y])
+                    self._boxesInitialPos.append([x,y])
                 elif p == PLAYER:
-                    self._player = [x,y]
+                    self._playerInitialPos = [x,y]
     
     @property
     def player(self):
-        return self._player
+        return self._playerInitialPos
     
     @property
     def walls(self):
@@ -39,13 +39,8 @@ class Stage:
 
     @property
     def boxes(self):
-        return self._boxes
-
-
-    def getGameMatrix(self):
-        matrix = [[1 for x in range(self.ver_tiles)] for y in range(self.hor_tiles)]
-        for w in self._walls:
-            matrix[w[1]][w[0]] = 0
-        for b in self._boxes:
-            matrix[b[1]][b[0]] = 0
-        return matrix
+        return self._boxesInitialPos
+    
+    @property
+    def enemies(self):
+        return self._enemiesInitialPos

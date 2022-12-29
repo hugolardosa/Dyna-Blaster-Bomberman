@@ -19,11 +19,15 @@ class Game:
         self._playerdead = pygame.event.custom_type()
         self._enemydead = pygame.event.custom_type()
         
-        self._player = Player(self._stage,self._dropbomb)
         self._boxes = [Box(b[0],b[1]) for b in self._stage.boxes]
-        self._enemies = [Enemy("Marco", (7,11), (11, 7),self._stage, self._player.pos)]
+        
         self._bombs = []
         
+        
+        self._player = Player(self._stage.player, self._stage.walls,self._boxes,self._bombs ,self._dropbomb)
+        
+        self._enemies = []
+        self._enemies.append(Enemy(1, [7,11] , self._player, self.stage._walls, self._boxes, self._bombs, self._enemies))
     
     @property
     def scale(self):
@@ -66,8 +70,8 @@ class Game:
         return self._boxes
     
     def addBomb(self, pos):
-        self._bombs.append(Bomb(pos,40))
-    
+        self._bombs.append(Bomb(pos,40, 3))
+
     @property
     def enemies(self):
         return self._enemies
@@ -77,8 +81,10 @@ class Game:
         return self._player
     
     def tick(self):
+
         for enemy in self._enemies:
             enemy.tick()
+            
             if self._player.pos[0] == enemy.pos[0] and self._player.pos[1] == enemy.pos[1]:
                 pygame.event.post(pygame.event.Event(self._playerdead)) 
             
@@ -138,11 +144,11 @@ class Game:
                 enemy.kill()
                 
         
-        for box in self.boxes:
-            if box.opened:
-                self._boxes.remove(box)
-                self.stage.boxes.remove(box.pos)
+        # for box in self.boxes:
+        #     if box.opened:
+        #         self._boxes.remove(box)
             
         for enemy in self.enemies:
             if not enemy.isAlive:
-                self.enemies.remove(enemy)
+                self._enemies.remove(enemy)
+                
