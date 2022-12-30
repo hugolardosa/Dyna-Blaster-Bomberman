@@ -2,7 +2,7 @@ import pygame
 from Command import Command
 
 class Player(Command):
-    def __init__(self, pos, walls, boxes, bombs, dropbomb) -> None:
+    def __init__(self, pos, walls, boxes, bombs, dropbomb, wallPass) -> None:
         super().__init__()
         self.health = 1
         self.ticks = 0
@@ -12,6 +12,7 @@ class Player(Command):
         self.boxes = boxes
         self.bombs = bombs
         self.dropbomb = dropbomb
+        self.wallPass = wallPass    
     
     def isAlive(self):
         return self.health > 0
@@ -30,8 +31,13 @@ class Player(Command):
             bombs = [b.pos for b in self.bombs]
             possible_pos = [self.pos[0], self.pos[1] - 1]
             
-            if possible_pos in walls or  possible_pos in  boxes or  possible_pos in  bombs:
+            if possible_pos in walls or possible_pos in bombs:
                 return
+                
+            if not self.wallPass:
+                if possible_pos in boxes:
+                    return
+            
             self.pos[1] -= 1
             
             self.ticks = 0
@@ -45,8 +51,14 @@ class Player(Command):
             bombs =  [b.pos for b in self.bombs]
             print(boxes)
             possible_pos = [self.pos[0], self.pos[1] + 1]
-            if possible_pos in walls or  possible_pos in  boxes or  possible_pos in  bombs:
+            
+            if possible_pos in walls or possible_pos in bombs:
                 return
+                
+            if not self.wallPass:
+                if possible_pos in boxes:
+                    return
+                
             self.pos[1] += 1
             
             self.ticks = 0
@@ -60,8 +72,13 @@ class Player(Command):
             bombs =  [b.pos for b in self.bombs]
             possible_pos =  [self.pos[0]- 1, self.pos[1]]
             
-            if possible_pos in walls or  possible_pos in  boxes or  possible_pos in  bombs:
+            if possible_pos in walls or possible_pos in bombs:
                 return
+                
+            if not self.wallPass:
+                if possible_pos in boxes:
+                    return
+            
             self.pos[0] -= 1
 
             self.ticks = 0
@@ -74,8 +91,14 @@ class Player(Command):
             boxes = [b.pos for b in self.boxes if not b.isOpened]
             bombs =  [b.pos for b in self.bombs]
             possible_pos = [self.pos[0] + 1, self.pos[1]]
-            if possible_pos in walls or  possible_pos in  boxes or  possible_pos in  bombs:
+            
+            if possible_pos in walls or possible_pos in bombs:
                 return
+                
+            if not self.wallPass:
+                if possible_pos in boxes:
+                    return
+            
             self.pos[0] += 1
             self.ticks = 0
             

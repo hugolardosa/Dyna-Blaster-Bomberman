@@ -5,7 +5,7 @@ from Common import Direction
 # from pathfinding.finder.a_star import AStarFinder
 
 class Enemy:
-    def __init__(self, id, staringPos, player, walls, boxes, bombs, enemies):
+    def __init__(self, id, staringPos, player, walls, boxes, bombs, enemies, wallPass):
         self.pos = staringPos
         self.speed = 10
         
@@ -23,6 +23,7 @@ class Enemy:
         self.boxes = boxes
         self.bombs = bombs
         self.enemies = enemies
+        self.wallPass = wallPass
         
         self.intelligent = False
         
@@ -59,25 +60,25 @@ class Enemy:
         
         if self.direction == Direction.RIGHT:
             possiblePos = [self.pos[0]+1, self.pos[1]]
-            if possiblePos not in walls and possiblePos not in boxes and possiblePos not in bombs and possiblePos not in enemies:
+            if possiblePos not in walls and (possiblePos not in boxes or self.wallPass) and possiblePos not in bombs and possiblePos not in enemies:
                 new_pos[0] += 1
             else:
                 self.direction = self.directions[(self.direction.value + 1) % len(self.directions)]
         elif self.direction == Direction.LEFT:
             possiblePos = [self.pos[0]-1, self.pos[1]]
-            if possiblePos not in walls and possiblePos not in boxes and possiblePos not in bombs and possiblePos not in enemies:
+            if possiblePos not in walls and (possiblePos not in boxes or self.wallPass) and possiblePos not in bombs and possiblePos not in enemies:
                 new_pos[0] -= 1
             else:
                 self.direction = self.directions[(self.direction.value + 1) % len(self.directions)]
         elif self.direction == Direction.UP:
             possiblePos = [self.pos[0], self.pos[1]-1]
-            if possiblePos not in walls and possiblePos not in boxes and possiblePos not in bombs and possiblePos not in enemies:
+            if possiblePos not in walls and (possiblePos not in boxes or self.wallPass) and possiblePos not in bombs and possiblePos not in enemies:
                 new_pos[1]-=1
             else:
                 self.direction = self.directions[(self.direction.value + 1) % len(self.directions)]
         elif self.direction == Direction.DOWN:
             possiblePos = [self.pos[0], self.pos[1]+1]
-            if possiblePos not in walls and possiblePos not in boxes and possiblePos not in bombs and possiblePos not in enemies:
+            if possiblePos not in walls and (possiblePos not in boxes or self.wallPass) and possiblePos not in bombs and possiblePos not in enemies:
                 new_pos[1] += 1
             else:
                 self.direction = self.directions[(self.direction.value + 1) % len(self.directions)] 

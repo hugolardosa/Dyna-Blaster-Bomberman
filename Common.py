@@ -7,9 +7,11 @@ class Direction(enum.Enum):
     RIGHT = 3
     
 class PowerUps(enum.Enum):
-    Endgame = 0
+    NextLevel = 0
     Wallpass = 1
     FireUp = 2
     FireDown = 3
+    SpeedUp = 4
+    SpeedDown = 5
     
     

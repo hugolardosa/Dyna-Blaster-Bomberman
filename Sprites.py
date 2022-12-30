@@ -1,6 +1,6 @@
 import pygame
 from spritesheet import SpriteSheet
-
+from Common import PowerUps
 
 
 class WallSprite(pygame.sprite.Sprite):
@@ -35,10 +35,25 @@ class BoxSprite(pygame.sprite.Sprite):
         self.box = box
         self.size = size
         
+        # Box Item Image
         box_image_rect = (399, 108, 16, 16)
         self.box_image = SPRITESHEET.image_at(box_image_rect, -1)
         self.box_image = pygame.transform.scale(self.box_image, (size, size))
 
+        # Create a dictionary of powerUps
+        self.powerUpDict = {
+            PowerUps.NextLevel: (240, 48, 16, 16),
+            PowerUps.SpeedUp: (48, 48, 16, 16),
+            PowerUps.SpeedDown: (112, 48, 16, 16),
+            PowerUps.FireUp: (0, 48, 16, 16),
+            PowerUps.FireDown: (64, 48, 16, 16),
+            PowerUps.Wallpass: (80, 48, 16, 16)
+        }
+        
+        for key, value in self.powerUpDict.items():
+            self.powerUpDict[key] = SPRITESHEET.image_at(value, -1)
+            self.powerUpDict[key] = pygame.transform.scale(self.powerUpDict[key], (size, size))
+        
         self.image = pygame.Surface([size * size, size * size])
         self.rect = self.image.get_rect()
         self.update()
@@ -54,9 +69,19 @@ class BoxSprite(pygame.sprite.Sprite):
         )
         
         if self.box.opened:
+            if self.box.powerUp is None:
+                self.kill()
+            elif self.box.powerUp is not None:
+                
+                self.image.fill("white")
+                self.image.set_colorkey("white")
+                
+                self.image.blit(
+                    self.powerUpDict[self.box.powerUp],
+                    (self.size * self.box.pos[0], self.size * self.box.pos[1]),
+                )
+        if self.box.used:
             self.kill()
-            
-        
     
 class EnemySprite(pygame.sprite.Sprite):
     def __init__(self, enemy, size, color):

@@ -65,6 +65,8 @@ while running:
             game.player.takeDamage()
             print("Player Dead")
             
+        
+            
       
     display.fill("olive")
     
