@@ -14,4 +14,9 @@ class PowerUps(enum.Enum):
     SpeedUp = 4
     SpeedDown = 5
     
-    
+class PlayerState(enum.Enum):
+    UP = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
+    IDLE = 5

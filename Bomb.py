@@ -8,13 +8,13 @@ class Bomb:
         self.time = time
         self.radius = radius
         self.damage = 1
-        self.timePassed = 0
+        self.ticks = 0
         self.exploded = False
         
 
    
     def tick(self):
-        if self.timePassed < self.time:
-            self.timePassed += 1  
+        if self.ticks < self.time:
+            self.ticks += 1  
             
     

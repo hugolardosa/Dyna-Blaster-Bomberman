@@ -1,5 +1,5 @@
 import pygame
-from Sprites import WallSprite, BoxSprite, EnemySprite, BombSprite, PlayerSprite, GrassSprite
+from Sprites import WallSprite, BoxSprite, EnemySprite, BombSprite, PlayerSprite, GrassSprite, HeaderSprite
 
 class SpriteHandler:
     def __init__(self) -> None:
@@ -9,8 +9,11 @@ class SpriteHandler:
         self.bombSprites = pygame.sprite.Group()
         self.playerSprites = pygame.sprite.Group()
         self.enemySprites = pygame.sprite.Group()
+        self.headerSprites = pygame.sprite.Group()
     
     def loadSprites(self, game): 
+        self.headerSprites.add(HeaderSprite(game.scale))
+        
         for x in range(game.width):
             for y in range(game.height):
                 p = [x,y]
@@ -26,6 +29,8 @@ class SpriteHandler:
             self.enemySprites.add(EnemySprite(enemy, game.scale, "blue"))
         
         self.playerSprites.add(PlayerSprite(game.player, game.scale, "red"))
+        
+        
  
     def addBomb(self, bomb, game):
         self.bombSprites.add(BombSprite(bomb, game.scale, "yellow"))
@@ -38,8 +43,11 @@ class SpriteHandler:
         self.enemySprites.empty()
 
     def drawSprites(self, display): 
+        
         self.grassSprites.draw(display)   
         self.wallSprites.draw(display)
+        
+        self.headerSprites.draw(display)
         
         self.collisionSprites.draw(display)
         self.collisionSprites.update()

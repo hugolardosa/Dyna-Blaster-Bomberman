@@ -70,6 +70,7 @@ while running:
         game.player.left()
     elif state[pygame.K_RIGHT]:
         game.player.right()
+
         
     game.tick()
 

@@ -15,7 +15,7 @@ import logging
 class Game:
     
     def __init__(self):
-        self.level = 1
+        self.level = 3
         self._scale = 35
         self._height = 15
         self._width = 15
@@ -23,10 +23,13 @@ class Game:
         self._stage = Stage(f"Maps/map_{self.level}.bmp")
         self._stagepowerUps = {
             1 : [PowerUps.NextLevel, PowerUps.FireUp],
-            2 : [PowerUps.NextLevel, PowerUps.SpeedUp, PowerUps.NextLevel, PowerUps.FireUp],
+            2 : [PowerUps.NextLevel, PowerUps.SpeedUp, PowerUps.FireUp],
             3 : [PowerUps.NextLevel, PowerUps.SpeedUp, PowerUps.FireUp, PowerUps.FireDown],
             4 : [PowerUps.NextLevel, PowerUps.SpeedUp, PowerUps.FireUp, PowerUps.FireDown, PowerUps.Wallpass],
         }
+        
+        for i in range(5, 12):
+            self._stagepowerUps[i] = [PowerUps.NextLevel, PowerUps.SpeedUp, PowerUps.FireUp, PowerUps.FireDown, PowerUps.Wallpass]
         
         self._dropbomb = pygame.event.custom_type()
         self._boxdrop = pygame.event.custom_type()
@@ -113,7 +116,7 @@ class Game:
             
         for bomb in self._bombs:
             bomb.tick()
-            if bomb.timePassed >= bomb.time:
+            if bomb.ticks >= bomb.time:
                 self.explosion(bomb)
                 self._bombs.remove(bomb)
                 

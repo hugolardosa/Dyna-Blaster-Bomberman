@@ -1,5 +1,6 @@
 import pygame
 from Command import Command
+from Common import PlayerState
 
 class Player(Command):
     def __init__(self, pos, walls, boxes, bombs, dropbomb, wallPass) -> None:
@@ -12,6 +13,7 @@ class Player(Command):
         self.boxes = boxes
         self.bombs = bombs
         self.dropbomb = dropbomb
+        self.state = PlayerState.IDLE
         self.wallPass = wallPass    
     
     def isAlive(self):
@@ -23,6 +25,7 @@ class Player(Command):
     # check collision with walls and boxes
     # if no collision, move player and update Game's player position
     def up(self):
+        self.state = PlayerState.UP
         if self.ticks < self.speed:
             self.ticks += 1
         else:
@@ -43,6 +46,7 @@ class Player(Command):
             self.ticks = 0
             
     def down(self):
+        self.state = PlayerState.DOWN
         if self.ticks < self.speed:
             self.ticks += 1
         else:
@@ -63,6 +67,7 @@ class Player(Command):
             self.ticks = 0
             
     def left(self):
+        self.state = PlayerState.LEFT
         if self.ticks < self.speed:
             self.ticks += 1
         else:
@@ -83,6 +88,7 @@ class Player(Command):
             self.ticks = 0
         
     def right(self):
+        self.state = PlayerState.RIGHT
         if self.ticks < self.speed:
             self.ticks += 1
         else:
