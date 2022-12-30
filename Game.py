@@ -16,15 +16,16 @@ class Game:
     
     def __init__(self):
         self.level = 1
-        self._scale = 40
+        self._scale = 35
         self._height = 15
         self._width = 15
         
         self._stage = Stage(f"Maps/map_{self.level}.bmp")
         self._stagepowerUps = {
             1 : [PowerUps.NextLevel, PowerUps.FireUp],
-            2 : [PowerUps.SpeedUp, PowerUps.NextLevel, PowerUps.FireUp],
-            
+            2 : [PowerUps.NextLevel, PowerUps.SpeedUp, PowerUps.NextLevel, PowerUps.FireUp],
+            3 : [PowerUps.NextLevel, PowerUps.SpeedUp, PowerUps.FireUp, PowerUps.FireDown],
+            4 : [PowerUps.NextLevel, PowerUps.SpeedUp, PowerUps.FireUp, PowerUps.FireDown, PowerUps.Wallpass],
         }
         
         self._dropbomb = pygame.event.custom_type()
@@ -32,6 +33,8 @@ class Game:
         self._playerdead = pygame.event.custom_type()
         self._enemydead = pygame.event.custom_type()
         self._nextstage = pygame.event.custom_type()
+        self._exploding = pygame.event.custom_type()
+        
         
         self._wallPass = False
         self._bombRadius = 2
@@ -75,6 +78,10 @@ class Game:
     @property
     def nextstage(self):
         return self._nextstage
+    
+    @property
+    def exploding(self):
+        return self._exploding
     
     @property
     def bombs(self):
@@ -143,6 +150,8 @@ class Game:
 
     def explosion(self,bomb):
         
+        pygame.event.post(pygame.event.Event(self._exploding))
+        
         bomb.exploded = True
 
         if self.inRange(bomb,self._player):
@@ -170,21 +179,27 @@ class Game:
                             pygame.event.post(pygame.event.Event(self._nextstage))
                             box.setUsed()
                     elif box.powerUp is PowerUps.FireUp:
-                        self._bombRadius += 1 if self._bombRadius < 5 else 5
+                        if self._bombRadius < 5:  self._bombRadius += 1
                         box.setUsed()
                     elif box.powerUp is PowerUps.FireDown:
-                        self._bombRadius -= 1 if self._bombRadius > 3 else 2
+                        if self._bombRadius > 3: self._bombRadius -= 1 
+                        print(self._bombRadius)
                         box.setUsed()
                     elif box.powerUp is PowerUps.SpeedUp:
-                        self._player.speed -= 1 if self._player.speed > 1 else 0
+                        if self._player.speed > 1: self._player.speed -= 1
                         box.setUsed()
                     elif box.powerUp is PowerUps.SpeedDown:
-                        self._player.speed += 1 if self._player.speed < 5 else 4
+                        if self._player.speed < 5: self._player.speed += 1
+                        box.setUsed()
+                    elif box.powerUp is PowerUps.Wallpass:
+                        self._wallPass = True
                         box.setUsed()
                         
     def _setPowerUps(self):
         numPowerUps = len(self._stagepowerUps[self.level])
+        
         boxes = random.choices(self._boxes, k=numPowerUps)
+        logging.warning(f"Boxes: {boxes}")
         for b in range(numPowerUps):
             boxes[b].setPowerUp(self._stagepowerUps[self.level][b])
             

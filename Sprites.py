@@ -3,6 +3,32 @@ from spritesheet import SpriteSheet
 from Common import PowerUps
 
 
+class GrassSprite(pygame.sprite.Sprite):
+    def __init__(self, x, y, size, color):
+        SPRITESHEET = SpriteSheet("Sprite/sprites.png")
+        super().__init__()
+        self.x = x
+        self.y = y
+        self.size = size
+        grass_image_rect = (367, 110, 16, 16)
+        self.grass_image = SPRITESHEET.image_at(grass_image_rect)
+        self.grass_image = pygame.transform.scale(self.grass_image, (size, size))
+        
+        self.image = pygame.Surface([size * size, size * size])
+        self.rect = self.image.get_rect()
+        self.update()
+        
+    def update(self):
+        self.image.fill("white")
+        self.image.set_colorkey("white")
+
+        # Render Food
+        self.image.blit(
+            self.grass_image,
+            (self.size * self.x, self.size * self.y),
+        )
+
+
 class WallSprite(pygame.sprite.Sprite):
     def __init__(self, x, y, size, color):
         SPRITESHEET = SpriteSheet("Sprite/sprites.png")
@@ -10,8 +36,8 @@ class WallSprite(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.size = size
-        wall_image_rect = (415, 109, 16, 16)
-        self.wall_image = SPRITESHEET.image_at(wall_image_rect, -1)
+        wall_image_rect = (415, 110, 16, 16)
+        self.wall_image = SPRITESHEET.image_at(wall_image_rect)
         self.wall_image = pygame.transform.scale(self.wall_image, (size, size))
         
         self.image = pygame.Surface([size * size, size * size])
@@ -36,8 +62,8 @@ class BoxSprite(pygame.sprite.Sprite):
         self.size = size
         
         # Box Item Image
-        box_image_rect = (399, 108, 16, 16)
-        self.box_image = SPRITESHEET.image_at(box_image_rect, -1)
+        box_image_rect = (399, 110, 16, 16)
+        self.box_image = SPRITESHEET.image_at(box_image_rect)
         self.box_image = pygame.transform.scale(self.box_image, (size, size))
 
         # Create a dictionary of powerUps
@@ -91,7 +117,7 @@ class EnemySprite(pygame.sprite.Sprite):
         self.enemy = enemy
         self.size = size
         
-        enemy_image_rect = (427, 215, 16, 16)
+        enemy_image_rect = (426, 215, 15, 18)
         self.enemy_image = SPRITESHEET.image_at(enemy_image_rect, -1)
         self.enemy_image = pygame.transform.scale(self.enemy_image, (size, size))
 
