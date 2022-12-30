@@ -1,16 +1,11 @@
-from pygame import *
 import pygame
-from pygame.font import Font
-from pygame.sprite import *
-from pygame.mixer import *
-from Bomb import Bomb
 
-from Player import Player
-from Enemy import Enemy 
+
 from Command import InputHandler
 from Game import Game
 
-from Sprites import WallSprite, BoxSprite, EnemySprite, BombSprite, PlayerSprite
+from SpriteHandler import SpriteHandler
+
 
 pygame.init()
 pygame.font.init()
@@ -24,30 +19,11 @@ clock = pygame.time.Clock()
 
 running = True
 
-wallSprites = pygame.sprite.Group()
-
-collisionSprites = pygame.sprite.Group()
-for wall in game.stage.walls:
-    wallSprites.add(WallSprite(wall[0], wall[1], game.scale, "white"))
-for box in game.boxes: 
-    collisionSprites.add(BoxSprite(box, game.scale, "brown"))
-
-enemySprites = pygame.sprite.Group()
-enemySprites.add(EnemySprite(game.enemies[0], game.scale, "blue"))
- 
-bombSprites = pygame.sprite.Group()
-
-playerSprites = pygame.sprite.Group()
-playerSprites.add(PlayerSprite(game.player, game.scale, "red"))
- 
+sprtHandler = SpriteHandler()
+sprtHandler.loadSprites(game)
 # music.load("Music/05_BGM1.mp3")
 # music.play(-1)
 
-
-
-inputDict = {
-                pygame.K_SPACE: 'action'
-            }
 
 while running:
     for event in pygame.event.get():
@@ -59,31 +35,23 @@ while running:
         elif event.type == game.dropbomb:
             x,y = game.player.pos
             game.addBomb([x,y])
-            bombSprites.add(BombSprite(game.bombs[-1], game.scale, "yellow"))
+            sprtHandler.addBomb(game.bombs[-1], game)
             
         elif event.type == game.playerdead:
             game.player.takeDamage()
             print("Player Dead")
             
-        
+        elif event.type == game.nextstage:
+            sprtHandler.clearSprites()
+            game.loadNextStage()
+            sprtHandler.loadSprites(game)
+            print("Next Stage")
             
-      
-    display.fill("olive")
+            
+    display.fill("black")
     
+    sprtHandler.drawSprites(display)
     
-    wallSprites.draw(display)
-    
-    collisionSprites.draw(display)
-    collisionSprites.update()
-    
-    enemySprites.draw(display)
-    enemySprites.update()
-    
-    bombSprites.draw(display)
-    bombSprites.update()
-    
-    playerSprites.draw(display)
-    playerSprites.update()
     
     state = pygame.key.get_pressed()
     if state[pygame.K_w]:

@@ -7,7 +7,11 @@ from Common import PowerUps
 
 
 import pygame 
+
 import random
+
+import logging
+
 class Game:
     
     def __init__(self):
@@ -30,17 +34,11 @@ class Game:
         self._nextstage = pygame.event.custom_type()
         
         self._wallPass = False
-        
-        self._boxes = [Box(b[0],b[1]) for b in self._stage.boxes]
-        self._setPowerUps()
         self._bombRadius = 2
         self._bombs = []
         
+        self._loadStage()
         
-        self._player = Player(self._stage.player, self._stage.walls,self._boxes,self._bombs ,self._dropbomb,self._wallPass)
-        
-        self._enemies = []
-        self._enemies.append(Enemy(1, [7,11] , self._player, self.stage._walls, self._boxes, self._bombs, self._enemies,self._wallPass))
     
     @property
     def scale(self):
@@ -73,6 +71,10 @@ class Game:
     @property
     def playerdead(self):
         return self._playerdead
+
+    @property
+    def nextstage(self):
+        return self._nextstage
     
     @property
     def bombs(self):
@@ -94,14 +96,12 @@ class Game:
         return self._player
     
     def tick(self):
-        
         self._checkPlayerBox()
-        print(self._bombRadius)
                 
         for enemy in self._enemies:
             enemy.tick()
             
-            if self._player.pos[0] == enemy.pos[0] and self._player.pos[1] == enemy.pos[1]:
+            if self._player.pos[0] == enemy.pos[0] and self._player.pos[1] == enemy.pos[1] and enemy.isAlive:
                 pygame.event.post(pygame.event.Event(self._playerdead)) 
             
         for bomb in self._bombs:
@@ -150,7 +150,6 @@ class Game:
             pygame.event.post(env)
         
         for box in self.boxes:
-            print(box.pos)
             if self.inRange(bomb, box):
                 box.setOpened()
         
@@ -159,15 +158,6 @@ class Game:
             if self.inRange(bomb, enemy):
                 enemy.kill()
                 
-        
-        # for box in self.boxes:
-        #     if box.opened:
-        #         self._boxes.remove(box)
-            
-        for enemy in self.enemies:
-            if not enemy.isAlive:
-                self._enemies.remove(enemy)
-                
     def _checkPlayerBox(self):
         boxes = [b for b in self._boxes if b.isOpened and b.powerUp != None and not b.isUsed]
         
@@ -175,7 +165,8 @@ class Game:
             for box in boxes:
                 if self.player.pos == box.pos:
                     if box.powerUp is PowerUps.NextLevel:
-                        if all([not e.isAlive() for e in self._enemies]):
+                        logging.info(f"Player is in box with powerup {box.powerUp}")
+                        if all([not e.isAlive for e in self._enemies]):
                             pygame.event.post(pygame.event.Event(self._nextstage))
                             box.setUsed()
                     elif box.powerUp is PowerUps.FireUp:
@@ -196,3 +187,23 @@ class Game:
         boxes = random.choices(self._boxes, k=numPowerUps)
         for b in range(numPowerUps):
             boxes[b].setPowerUp(self._stagepowerUps[self.level][b])
+            
+    def loadNextStage(self):
+        self.level += 1
+        self._stage = Stage(f"Maps/map_{self.level}.bmp")
+        self._loadStage()
+    
+    def _loadStage(self):
+        self._boxes = [Box(b[0],b[1]) for b in self._stage.boxes]
+        self._setPowerUps()
+        
+        self._player = Player(self._stage.player, self._stage.walls,self._boxes,self._bombs ,self._dropbomb,self._wallPass)
+        
+        self._enemies = []
+        i = 0
+        print(self._stage.enemies)
+        for pos in self._stage.enemies:
+            self._enemies.append(Enemy(i, pos , self._player, self.stage._walls, self._boxes, self._bombs, self._enemies,self._wallPass))
+            i += 1
+            
+        print(self._enemies)

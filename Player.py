@@ -49,7 +49,6 @@ class Player(Command):
             walls = self.walls
             boxes = [b.pos for b in self.boxes if not b.isOpened]
             bombs =  [b.pos for b in self.bombs]
-            print(boxes)
             possible_pos = [self.pos[0], self.pos[1] + 1]
             
             if possible_pos in walls or possible_pos in bombs:

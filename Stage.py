@@ -3,6 +3,7 @@ import pygame
 WALL = 16777215
 PLAYER = 255
 BOX = 16711680
+ENEMY = 314911
 
 class Stage:
     
@@ -28,6 +29,8 @@ class Stage:
                     self._boxesInitialPos.append([x,y])
                 elif p == PLAYER:
                     self._playerInitialPos = [x,y]
+                elif p == ENEMY:
+                    self._enemiesInitialPos.append([x,y])
     
     @property
     def player(self):
