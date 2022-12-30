@@ -22,6 +22,9 @@ class Player(Command):
     def takeDamage(self):
         self.health -= 1    
     
+    def idle(self):
+        self.state = PlayerState.IDLE
+    
     # check collision with walls and boxes
     # if no collision, move player and update Game's player position
     def up(self):

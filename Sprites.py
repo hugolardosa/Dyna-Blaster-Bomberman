@@ -1,6 +1,6 @@
 import pygame
 from spritesheet import SpriteSheet
-from Common import PowerUps
+from Common import PowerUps, PlayerState
 
 
 class HeaderSprite(pygame.sprite.Sprite):
@@ -15,7 +15,7 @@ class HeaderSprite(pygame.sprite.Sprite):
         self.banner_image = SPRITESHEET.image_at(banner_img_rect)
         self.banner_image = pygame.transform.scale(self.banner_image, (15*size, 2*size))
         
-        self.image = pygame.Surface([15 * size, 2 * size])
+        self.image : pygame.Surface = pygame.Surface([15 * size, 2 * size])
         self.rect = self.image.get_rect()
         self.update()
         
@@ -40,7 +40,7 @@ class GrassSprite(pygame.sprite.Sprite):
         self.grass_image = SPRITESHEET.image_at(grass_image_rect)
         self.grass_image = pygame.transform.scale(self.grass_image, (size, size))
         
-        self.image = pygame.Surface([size * size, size * size])
+        self.image : pygame.Surface = pygame.Surface([size * size, size * size])
         self.rect = self.image.get_rect()
         self.update()
         
@@ -82,7 +82,7 @@ class WallSprite(pygame.sprite.Sprite):
         self.right_wall_image = SPRITESHEET.image_at(right_wall_image_rect)
         self.right_wall_image = pygame.transform.scale(self.right_wall_image, (size, size))
         
-        self.image = pygame.Surface([size * size, size * size])
+        self.image : pygame.Surface = pygame.Surface([size * size, size * size])
         self.rect = self.image.get_rect()
         self.update()
         
@@ -141,7 +141,7 @@ class BoxSprite(pygame.sprite.Sprite):
             self.powerUpDict[key] = SPRITESHEET.image_at(value, -1)
             self.powerUpDict[key] = pygame.transform.scale(self.powerUpDict[key], (size, size))
         
-        self.image = pygame.Surface([size * size, size * size])
+        self.image : pygame.Surface = pygame.Surface([size * size, size * size])
         self.rect = self.image.get_rect()
         self.update()
         
@@ -188,7 +188,7 @@ class EnemySprite(pygame.sprite.Sprite):
             self.enemyDeath[i] = SPRITESHEET.image_at(self.enemyDeath[i],-1)
             self.enemyDeath[i] = pygame.transform.scale(self.enemyDeath[i], (size, size))
             
-        self.image = pygame.Surface([size * size, size * size])
+        self.image : pygame.Surface = pygame.Surface([size * size, size * size])
         self.rect = self.image.get_rect()
         
         self.count = 0
@@ -232,11 +232,11 @@ class BombSprite(pygame.sprite.Sprite):
             self.bombLife[i] = SPRITESHEET.image_at(self.bombLife[i],-1)
             self.bombLife[i] = pygame.transform.scale(self.bombLife[i], (size, size))
         
-        self.explode = (406, 32, 16, 16)
-        self.explode = SPRITESHEET.image_at(self.explode,-1)
+        self.explode_rect = (406, 32, 16, 16)
+        self.explode = SPRITESHEET.image_at(self.explode_rect,-1)
         self.explode = pygame.transform.scale(self.explode, (size, size))
         
-        self.image = pygame.Surface([size * size, size * size])
+        self.image : pygame.Surface = pygame.Surface([size * size, size * size])
         self.rect = self.image.get_rect()
         self.ticks = 0
         self.update()
@@ -282,23 +282,58 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.player = player
         self.size = size
         
-        player_image_rect = (0, 0, 19, 19)
-        self.player_image = SPRITESHEET.image_at(player_image_rect, -1)
-        self.player_image = pygame.transform.scale(self.player_image, (size, size))
-
-        self.image = pygame.Surface([size * size, size * size])
+        self.playerUp = [(242,0,18,22),(268,0,18,22)]
+        self.playerDown = [(28,0,18,22),(50,0,18,22)]
+        self.playerLeft = [(169,0,18,22),(193,0,18,22)]
+        self.playerRight = [(98,0,18,22),(121,0,18,22)]
+        for i in range(2):
+            self.playerUp[i] = SPRITESHEET.image_at(self.playerUp[i],-1)
+            self.playerUp[i] = pygame.transform.scale(self.playerUp[i], (size, size))
+            self.playerDown[i] = SPRITESHEET.image_at(self.playerDown[i],-1)
+            self.playerDown[i] = pygame.transform.scale(self.playerDown[i], (size, size))
+            self.playerLeft[i] = SPRITESHEET.image_at(self.playerLeft[i],-1)
+            self.playerLeft[i] = pygame.transform.scale(self.playerLeft[i], (size, size))
+            self.playerRight[i] = SPRITESHEET.image_at(self.playerRight[i],-1)
+            self.playerRight[i] = pygame.transform.scale(self.playerRight[i], (size, size))
+    
+        
+        self.playerIdle_rect = (3,0,18,22)
+        self.playerIdle = SPRITESHEET.image_at(self.playerIdle_rect,-1)
+        self.playerIdle = pygame.transform.scale(self.playerIdle, (size, size))
+        
+        
+        self.image : pygame.Surface = pygame.Surface([size * size, size * size])
         self.rect = self.image.get_rect()
         self.update()
    
     def update(self):
         if not self.player.isAlive:
             self.kill()
+            
         self.image.fill("white")
         self.image.set_colorkey("white")
-
-        # Render Food
-        self.image.blit(
-            self.player_image,
-            (self.size * self.player.pos[0], self.size * self.player.pos[1]),
-        )
-
+        if self.player.state == PlayerState.UP:
+            self.image.blit(
+                self.playerUp[int((self.player.ticks / 4) % 2)],
+                (self.size * self.player.pos[0], self.size * self.player.pos[1]),
+            )
+        elif self.player.state == PlayerState.LEFT:
+            self.image.blit(
+                self.playerLeft[int((self.player.ticks / 4) % 2)],
+                (self.size * self.player.pos[0], self.size * self.player.pos[1]),
+            )
+        elif self.player.state == PlayerState.DOWN:
+            self.image.blit(
+                self.playerDown[int((self.player.ticks / 4) % 2)],
+                (self.size * self.player.pos[0], self.size * self.player.pos[1]),
+            )
+        elif self.player.state == PlayerState.RIGHT:
+            self.image.blit(
+                self.playerRight[int((self.player.ticks / 4) % 2)],
+                (self.size * self.player.pos[0], self.size * self.player.pos[1]),
+            )
+        else:
+            self.image.blit(
+                self.playerIdle,
+                (self.size * self.player.pos[0], self.size * self.player.pos[1]),
+            )

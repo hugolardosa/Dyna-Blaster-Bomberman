@@ -15,7 +15,7 @@ import logging
 class Game:
     
     def __init__(self):
-        self.level = 3
+        self.level = 1
         self._scale = 35
         self._height = 15
         self._width = 15

@@ -70,7 +70,8 @@ while running:
         game.player.left()
     elif state[pygame.K_RIGHT]:
         game.player.right()
-
+    else:
+        game.player.idle()
         
     game.tick()
 
