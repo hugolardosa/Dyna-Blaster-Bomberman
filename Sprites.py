@@ -314,22 +314,22 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.image.set_colorkey("white")
         if self.player.state == PlayerState.UP:
             self.image.blit(
-                self.playerUp[int((self.player.ticks / 4) % 2)],
+                self.playerUp[int((self.player.ticks / 2) % 2)],
                 (self.size * self.player.pos[0], self.size * self.player.pos[1]),
             )
         elif self.player.state == PlayerState.LEFT:
             self.image.blit(
-                self.playerLeft[int((self.player.ticks / 4) % 2)],
+                self.playerLeft[int((self.player.ticks / 2) % 2)],
                 (self.size * self.player.pos[0], self.size * self.player.pos[1]),
             )
         elif self.player.state == PlayerState.DOWN:
             self.image.blit(
-                self.playerDown[int((self.player.ticks / 4) % 2)],
+                self.playerDown[int((self.player.ticks / 2) % 2)],
                 (self.size * self.player.pos[0], self.size * self.player.pos[1]),
             )
         elif self.player.state == PlayerState.RIGHT:
             self.image.blit(
-                self.playerRight[int((self.player.ticks / 4) % 2)],
+                self.playerRight[int((self.player.ticks / 2) % 2)],
                 (self.size * self.player.pos[0], self.size * self.player.pos[1]),
             )
         else:

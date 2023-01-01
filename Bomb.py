@@ -1,7 +1,3 @@
-import pygame
-import time 
-
-
 class Bomb:
     def __init__(self, pos, time, radius) -> None:
         self.pos = pos
