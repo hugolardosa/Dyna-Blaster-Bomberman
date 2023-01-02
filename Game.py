@@ -4,6 +4,8 @@ from Enemy import Enemy
 from Box import Box
 from Bomb import Bomb
 from Common import PowerUps
+from ScoreBoard import ScoreBoard
+from Timer import Timer
 
 
 import pygame 
@@ -15,7 +17,7 @@ import logging
 class Game:
     
     def __init__(self):
-        self.level = 1
+        self.level = 10
         self._scale = 35
         self._height = 15
         self._width = 15
@@ -37,7 +39,10 @@ class Game:
         self._enemydead = pygame.event.custom_type()
         self._nextstage = pygame.event.custom_type()
         self._exploding = pygame.event.custom_type()
+        self._gamewon = pygame.event.custom_type()
         
+        self._scoreboard = ScoreBoard()
+        self._timer = Timer()
         
         self._wallPass = False
         self._bombRadius = 2
@@ -81,6 +86,10 @@ class Game:
     @property
     def nextstage(self):
         return self._nextstage
+
+    @property
+    def gamewon(self):
+        return self._gamewon
     
     @property
     def exploding(self):
@@ -105,9 +114,21 @@ class Game:
     def player(self):
         return self._player
     
+    @property
+    def scoreboard(self):
+        return self._scoreboard
+    
+    @property
+    def timer(self):
+        return self._timer
+    
     def tick(self):
         self._checkPlayerBox()
-                
+        self._timer.tick()
+        
+        if self._timer.timesUp():
+            pygame.event.post(pygame.event.Event(self._playerdead))
+        
         for enemy in self._enemies:
             enemy.tick()
             
@@ -196,6 +217,9 @@ class Game:
                         box.setUsed()
                     elif box.powerUp is PowerUps.Wallpass:
                         self._wallPass = True
+                        self.player.wallPass = True
+                        for e in self._enemies:
+                            e.wallPass = True
                         box.setUsed()
                         
     def _setPowerUps(self):
@@ -207,6 +231,10 @@ class Game:
             boxes[b].setPowerUp(self._stagepowerUps[self.level][b])
             
     def loadNextStage(self):
+        if self.level == 11:
+            env = pygame.event.Event(self.gamewon)
+            pygame.event.post(env)
+            return
         self.level += 1
         self._stage = Stage(f"Maps/map_{self.level}.bmp")
         self._loadStage()
@@ -221,7 +249,9 @@ class Game:
         i = 0
         print(self._stage.enemies)
         for pos in self._stage.enemies:
-            self._enemies.append(Enemy(i, pos , self._player, self.stage._walls, self._boxes, self._bombs, self._enemies,self._wallPass))
+            e = Enemy(i, pos , self._player, self.stage._walls, self._boxes, self._bombs, self._enemies,self._wallPass)
+            e.add_observer(self._scoreboard)
+            self._enemies.append(e)
             i += 1
             
         print(self._enemies)

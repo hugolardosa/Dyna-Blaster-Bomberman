@@ -1,11 +1,13 @@
 from typing import List
 from Common import Direction
+from observer import Subject
 
 # from pathfinding.core.grid import Grid
 # from pathfinding.finder.a_star import AStarFinder
 
-class Enemy:
+class Enemy(Subject):
     def __init__(self, id, staringPos, player, walls, boxes, bombs, enemies, wallPass):
+        super().__init__()
         self.pos = staringPos
         self.speed = 10
         
@@ -33,6 +35,7 @@ class Enemy:
 
     def kill(self):
         self.alive = False
+        self.notify()
     
     @property
     def isAlive(self):
@@ -85,6 +88,10 @@ class Enemy:
             
         self.lastPos = self.pos
         self.pos = new_pos
+    
+    def notify(self):
+        for observer in self.observers:
+            observer.on_notify()
         
             
              
