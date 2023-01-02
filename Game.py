@@ -12,12 +12,10 @@ import pygame
 
 import random
 
-import logging
-
 class Game:
     
     def __init__(self):
-        self.level = 10
+        self.level = 1
         self._scale = 35
         self._height = 15
         self._width = 15
@@ -198,7 +196,6 @@ class Game:
             for box in boxes:
                 if self.player.pos == box.pos:
                     if box.powerUp is PowerUps.NextLevel:
-                        logging.info(f"Player is in box with powerup {box.powerUp}")
                         if all([not e.isAlive for e in self._enemies]):
                             pygame.event.post(pygame.event.Event(self._nextstage))
                             box.setUsed()
@@ -207,7 +204,6 @@ class Game:
                         box.setUsed()
                     elif box.powerUp is PowerUps.FireDown:
                         if self._bombRadius > 3: self._bombRadius -= 1 
-                        print(self._bombRadius)
                         box.setUsed()
                     elif box.powerUp is PowerUps.SpeedUp:
                         if self._player.speed > 1: self._player.speed -= 1
@@ -224,11 +220,12 @@ class Game:
                         
     def _setPowerUps(self):
         numPowerUps = len(self._stagepowerUps[self.level])
-        
-        boxes = random.choices(self._boxes, k=numPowerUps)
-        logging.warning(f"Boxes: {boxes}")
-        for b in range(numPowerUps):
-            boxes[b].setPowerUp(self._stagepowerUps[self.level][b])
+        indexes = random.sample(range(0, len(self._boxes)), numPowerUps)
+
+        p = 0
+        for i in indexes:
+            self._boxes[i].setPowerUp(self._stagepowerUps[self.level][p])
+            p += 1
             
     def loadNextStage(self):
         if self.level == 11:
@@ -247,11 +244,9 @@ class Game:
         
         self._enemies = []
         i = 0
-        print(self._stage.enemies)
         for pos in self._stage.enemies:
             e = Enemy(i, pos , self._player, self.stage._walls, self._boxes, self._bombs, self._enemies,self._wallPass)
             e.add_observer(self._scoreboard)
             self._enemies.append(e)
             i += 1
             
-        print(self._enemies)

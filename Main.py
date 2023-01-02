@@ -16,7 +16,7 @@ pygame.mixer.init()
 game = Game() # Initialize Game singleton
 
 display = pygame.display.set_mode((game.scale * game.width, game.scale * game.height))
-
+pygame.display.set_caption('Dyna Blaster')
 clock = pygame.time.Clock()
 
 running = True
@@ -41,10 +41,6 @@ while running:
                     running = False
                 else:
                     gameLost = False
-                    game.level -= 1
-                    sprtHandler.clearSprites()
-                    game.loadNextStage()
-                    sprtHandler.loadSprites(game)
                     music.load(random.choice(["Music/05_BGM1.mp3", "Music/06_BGM2.mp3", "Music/07_BGM3.mp3"]))
                     music.play(-1)
             InputHandler().handleInput(event, game.player, 
